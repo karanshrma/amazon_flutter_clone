@@ -24,17 +24,22 @@ class Product {
   });
 
   Map<String, dynamic> toMap() {
-    return {
+    Map<String, dynamic> map = {
       'name': name,
       'description': description,
       'quantity': quantity,
       'images': images,
       'category': category,
       'price': price,
-      'id': id,
-      'rating': rating,
     };
+
+    // Only add non-null values
+    if (id != null) map['id'] = id;
+    if (rating != null) map['rating'] = rating;
+
+    return map;
   }
+
 
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(

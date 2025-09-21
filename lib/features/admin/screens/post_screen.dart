@@ -1,9 +1,11 @@
-import 'package:amazon_flutter_clone/features/account/widgets/single_product.dart';
+
 import 'package:amazon_flutter_clone/features/admin/screens/add_products.dart';
 import 'package:amazon_flutter_clone/features/admin/services/admin_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../common/widgets/loader.dart';
+import '../../../constants/utils.dart';
 import '../../../models/product.dart';
 
 class PostScreen extends StatefulWidget {
@@ -21,7 +23,6 @@ class _PostScreenState extends State<PostScreen> {
   void initState() {
     super.initState();
     fetchAllProducts();
-    
   }
 
   fetchAllProducts() async {
@@ -33,13 +34,36 @@ class _PostScreenState extends State<PostScreen> {
     Navigator.pushNamed(context, AddProducts.routeName);
   }
 
-  void deleteProduct(Product product , int index){
-    adminService.deleteProduct(context: context, product: product, onSuccess: (){
-      products!.removeAt(index);
-      setState(() {
+  Future<void> deleteProduct(Product product, int index) async {
+       final shouldRemove = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Remove Item'),
+          content: const Text('Remove this item from cart?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Remove'),
+            ),
+          ],
+        ),
+      );
 
-      });
-    });
+      if (shouldRemove == true) {
+        adminService.deleteProduct(
+          context: context,
+          product: product,
+          onSuccess: () {
+            products!.removeAt(index);
+            setState(() {});
+          },
+        );
+      }
+
   }
 
   @override
@@ -47,43 +71,125 @@ class _PostScreenState extends State<PostScreen> {
     return products == null
         ? Loader()
         : Scaffold(
-            body: GridView.builder(
-              itemCount: products!.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-              ),
-              itemBuilder: (context, index) {
-                final productData = products![index];
-                return Column(
-                  children: [
-                    SizedBox(
-                      height: 140,
-                      child: SingleProduct(image: productData.images[0]),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            productData.name,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            top: 8,
+            left: 8,
+            right: 8,
+            bottom: 80, // Space for floating action button
+          ),
+          child: GridView.builder(
+            itemCount: products!.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 0.75, // Adjust this ratio to fit content properly
+            ),
+            itemBuilder: (context, index) {
+              final productData = products![index];
+              return Card(
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Image container with fixed height
+                      Expanded(
+                        flex: 3, // Takes 3/5 of the available space
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black12, width: 1.5),
+                            borderRadius: BorderRadius.circular(5),
+                            color: Colors.white,
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: CachedNetworkImage(
+                              imageUrl: productData.images[0],
+                              fit: BoxFit.cover,
+                              errorWidget: (context, error, stackTrace) {
+                                return CachedNetworkImage(
+                                  imageUrl: defaultImageUrl,
+                                  // your fallback image
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) =>
+                                      CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
+                                );
+                              }
+                            ),
                           ),
                         ),
-                        IconButton(onPressed: () => deleteProduct(productData, index), icon: const Icon(Icons.delete_outline))
-                      ],
-                    ),
-                  ],
-                );
-              },
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: navigateToAddProduct,
-              tooltip: 'Add a product',
-              child: const Icon(Icons.add, color: Colors.black),
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
-          );
+                      ),
+                      const SizedBox(height: 8),
+
+                      // Product details section
+                      Expanded(
+                        flex: 2, // Takes 2/5 of the available space
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Product name
+                            SizedBox(
+                              height: 15,
+                              child: Text(
+                                productData.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                            ),
+
+                            // Price and delete button row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '\$${productData.price.toStringAsFixed(0)}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.orange,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () => deleteProduct(productData, index),
+                                  icon: const Icon(
+                                    Icons.delete_outline,
+                                    color: Colors.red,
+                                    size: 20,
+                                  ),
+                                  constraints: const BoxConstraints(),
+                                  padding: EdgeInsets.zero,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: navigateToAddProduct,
+        tooltip: 'Add a product',
+        backgroundColor: Colors.orange,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
   }
 }

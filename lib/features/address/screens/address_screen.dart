@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:pay/pay.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart'; // Add this import for rootBundle
-
-import '../../../common/widgets/custom_elevatedbutton.dart';
 import '../../../constants/global_variables.dart';
 import '../../auth/widgets/custom_textfield.dart';
 
@@ -47,7 +45,7 @@ class _AddressScreenState extends State<AddressScreen> {
     addressService.placeOrder(
       context: context,
       address: addressToBeUsed,
-      totalSum: double.parse(widget.totalAmount),
+      totalSum: widget.totalAmount as double,
     );
   }
 
@@ -69,10 +67,8 @@ class _AddressScreenState extends State<AddressScreen> {
       }
     } else if (addressFromProvider.isNotEmpty) {
       addressToBeUsed = addressFromProvider;
-    } else {
-      showSnackbar(context, 'ERROR');
     }
-    print(addressToBeUsed);
+
   }
 
   @override
@@ -81,7 +77,7 @@ class _AddressScreenState extends State<AddressScreen> {
     paymentitem = [
       PaymentItem(
         label: 'Total Amount',
-        amount: widget.totalAmount,
+        amount: widget.totalAmount.toString(),
         status: PaymentItemStatus.final_price,
       ),
     ];

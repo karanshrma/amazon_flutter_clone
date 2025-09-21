@@ -36,6 +36,19 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    Widget homeWidget;
+
+    if (userProvider.user.token.isNotEmpty) {
+      if (userProvider.user.type == 'user') {
+        homeWidget = const BottomBar();
+      } else {
+        homeWidget = const AdminScreen();
+      }
+    } else {
+      homeWidget = const AuthScreen();
+    }
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -46,10 +59,11 @@ class _MyAppState extends State<MyApp> {
           iconTheme: IconThemeData(color: Colors.black),
         ),
       ),
-      onGenerateRoute: (settings) => generateRoute(settings),
-      home: Provider.of<UserProvider>(context).user.token.isNotEmpty
-          ? Provider.of<UserProvider>(context).user.type == 'user'? const BottomBar() : const AdminScreen()
-          : const AuthScreen(),
+      onGenerateRoute: (settings) {
+        return generateRoute(settings);
+      },
+      home: homeWidget,
     );
   }
 }
+

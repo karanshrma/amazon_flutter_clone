@@ -19,7 +19,7 @@ class SearchService {
     List<Product> productList = [];
     try {
       http.Response res = await http.get(
-        Uri.parse('$uri//api/products/search/$searchQuery'),
+        Uri.parse('$uri/api/products/search/$searchQuery'),
         headers: {
           'Content-type': 'application/json; charset=UTF-8',
           'x-auth-token': userProvider.user.token,
@@ -29,12 +29,8 @@ class SearchService {
         response: res,
         context: context,
         onSuccess: () {
-          // Fixed: Get the decoded response first
-          var decodedResponse = jsonDecode(res.body);
-          // Then iterate through the list length
-          for (int i = 0; i < decodedResponse.length; i++) {
-            productList.add(Product.fromJson(decodedResponse[i] as String));
-          }
+          var decodedResponse = jsonDecode(res.body) as List;
+          productList = decodedResponse.map((item) => Product.fromMap(item as Map<String , dynamic>)).toList();
         },
       );
     } catch (e) {

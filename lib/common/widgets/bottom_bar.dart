@@ -3,8 +3,8 @@ import 'package:amazon_flutter_clone/features/account/screens/account_screen.dar
 import 'package:amazon_flutter_clone/features/cart/screens/cart_screen.dart';
 import 'package:amazon_flutter_clone/home/screens/home_screen.dart';
 import 'package:amazon_flutter_clone/providers/user_provider.dart';
-import 'package:flutter/material.dart' hide Badge;
-import 'package:badges/badges.dart';
+import 'package:flutter/material.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:provider/provider.dart';
 
 class BottomBar extends StatefulWidget {
@@ -95,8 +95,8 @@ class _BottomBarState extends State<BottomBar> {
                   ),
                 ),
               ),
-              child: Badge(
-                badgeStyle: const BadgeStyle(
+              child: badges.Badge(
+                badgeStyle: const badges.BadgeStyle(
                   badgeColor: Colors.white,
                   elevation: 0,
                 ),

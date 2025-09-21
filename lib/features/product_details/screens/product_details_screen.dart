@@ -1,11 +1,13 @@
 import 'package:amazon_flutter_clone/common/widgets/custom_elevatedbutton.dart';
+import 'package:amazon_flutter_clone/constants/utils.dart';
+import 'package:amazon_flutter_clone/features/address/screens/address_screen.dart';
+import 'package:amazon_flutter_clone/features/cart/screens/cart_screen.dart';
 import 'package:amazon_flutter_clone/features/product_details/services/product_details_service.dart';
 import 'package:amazon_flutter_clone/providers/user_provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
-
 import '../../../common/widgets/stars.dart';
 import '../../../constants/global_variables.dart';
 import '../../../models/product.dart';
@@ -48,12 +50,25 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   void navigateToSearch(String query) {
     Navigator.pushNamed(context, SearchScreen.routeName, arguments: query);
   }
-  void addToCart(){
-    productDetailsService.addToCart(context: context, product: widget.product,);
+
+  void addToCart() {
+    productDetailsService.addToCart(context: context, product: widget.product);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Item has been added to cart'),
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserProvider>().user;
+    int totalQuantity = user.cart.fold(
+      0,
+      (total, item) => total + ((item['quantity'] ?? 0) as int),
+    );
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
@@ -63,14 +78,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               gradient: GlobalVariables.appBarGradient,
             ),
           ),
+          titleSpacing: 2,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Container(
                   height: 42,
-
-                  margin: const EdgeInsets.only(left: 12),
+                  margin: const EdgeInsets.only(left: 8, right: 15),
+                  // Reduced left margin
                   child: Material(
                     borderRadius: BorderRadius.circular(7),
                     elevation: 1,
@@ -78,7 +94,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       onFieldSubmitted: navigateToSearch,
                       decoration: InputDecoration(
                         hintText: 'Search Amazon.in!',
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           color: Colors.grey,
                           fontWeight: FontWeight.w500,
                           fontSize: 17,
@@ -86,30 +102,32 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         filled: true,
                         fillColor: Colors.white,
                         contentPadding: const EdgeInsets.only(top: 10),
-                        border: OutlineInputBorder(
+                        border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(7)),
                           borderSide: BorderSide.none,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(7),
-                          ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(7)),
                           borderSide: BorderSide(
                             color: Colors.black38,
                             width: 1,
                           ),
                         ),
-                        prefixIcon: InkWell(
-                          onTap: () {},
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 6),
-                            child: GestureDetector(
-                              onTap: () => navigateToSearch,
-                              child: const Icon(
-                                Icons.search,
-                                color: Colors.black,
-                                size: 23,
-                              ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(7)),
+                          borderSide: BorderSide(
+                            color: Colors.orange,
+                            width: 2,
+                          ),
+                        ),
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: GestureDetector(
+                            onTap: () => navigateToSearch(""),
+                            child: const Icon(
+                              Icons.search,
+                              color: Colors.black,
+                              size: 23,
                             ),
                           ),
                         ),
@@ -118,13 +136,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   ),
                 ),
               ),
-              Container(
-                color: Colors.transparent,
-                height: 42,
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                child: const Icon(Icons.mic, color: Colors.black, size: 25),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: IconButton(
+                  icon: Badge.count(
+                    count: totalQuantity,
+                    child: Icon(
+                      Icons.shopping_cart_outlined,
+                      color: Colors.black,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, CartScreen.routeName);
+                  },
+                ),
               ),
-              SizedBox(height: 3),
             ],
           ),
         ),
@@ -134,39 +160,44 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(widget.product.id!),
+                  Text(
+                    widget.product.name,
+                    style: const TextStyle(fontSize: 20),
+                  ),
                   Stars(rating: averageRating),
                 ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-              child: Text(
-                widget.product.name,
-                style: const TextStyle(fontSize: 20),
               ),
             ),
             CarouselSlider(
               items: widget.product.images.map((i) {
                 return Builder(
-                  builder: (BuildContext context) =>
-                      Image.network(i, fit: BoxFit.contain, height: 300),
+                  builder: (BuildContext context) => Image.network(
+                    i,
+                    fit: BoxFit.contain,
+                    height: 300,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        "assets/images/default.jpg", // your fallback image
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
                 );
               }).toList(),
               options: CarouselOptions(viewportFraction: 1, height: 200),
             ),
-            Container(color: Colors.black12, height: 5),
+            SizedBox(height: 5),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: RichText(
                 text: TextSpan(
                   text: 'Deal Price: ',
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 14,
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
@@ -174,7 +205,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     TextSpan(
                       text: '\$${widget.product.price}',
                       style: const TextStyle(
-                        fontSize: 22,
+                        fontSize: 18,
                         color: Colors.red,
                         fontWeight: FontWeight.w500,
                       ),
@@ -184,15 +215,26 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+                vertical: 4.0,
+              ),
               child: Text(widget.product.description),
             ),
-            Container(color: Colors.black12, height: 5),
+            SizedBox(height: 5),
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: CustomElevatedbutton(text: 'Buy Now', onPressed: () {}),
+              child: CustomElevatedbutton(
+                text: 'Buy Now',
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    AddressScreen.routeName,
+                    arguments: widget.product.price.toString(),
+                  );
+                },
+              ),
             ),
-            const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: CustomElevatedbutton(
@@ -201,8 +243,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 color: Colors.deepOrangeAccent,
               ),
             ),
+
             const SizedBox(height: 10),
-            Container(color: Colors.black12, height: 5),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Text(
@@ -213,6 +255,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 5),
             RatingBar.builder(
               initialRating: myrating,
               minRating: 1,

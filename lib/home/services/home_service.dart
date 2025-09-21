@@ -17,7 +17,7 @@ class HomeService {
     List<Product> productList = [];
     try {
       http.Response res = await http.get(
-        Uri.parse('$uri//api/products?category=$category'),
+        Uri.parse('$uri/api/products?category=$category'),
         headers: {
           'Content-type': 'application/json; charset=UTF-8',
           'x-auth-token': userProvider.user.token,
@@ -31,7 +31,7 @@ class HomeService {
           var decodedResponse = jsonDecode(res.body);
           // Then iterate through the list length
           for (int i = 0; i < decodedResponse.length; i++) {
-            productList.add(Product.fromJson(decodedResponse[i] as String));
+            productList.add(Product.fromMap(decodedResponse[i] as Map<String, dynamic>));
           }
         },
       );
@@ -41,17 +41,16 @@ class HomeService {
     return productList;
   }
 
-  Future<Product> fetchDealofDay({
+  Future<Product> fetchDealOfDay({
     required BuildContext context,
-    required String category,
   }) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     Product product = Product(
-      name: 'name',
-      description: 'description',
-      quantity: 0.0,
+      name: '',
+      description: '',
+      quantity: 0,
       images: [],
-      category: 'category',
+      category: '',
       price: 0.0,
     );
     try {

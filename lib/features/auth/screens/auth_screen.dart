@@ -1,10 +1,9 @@
-import 'dart:math';
-
 import 'package:amazon_flutter_clone/constants/global_variables.dart';
 import 'package:amazon_flutter_clone/features/auth/services/auth_service.dart';
 import 'package:amazon_flutter_clone/common/widgets/custom_elevatedbutton.dart';
 import 'package:flutter/material.dart';
 
+import '../../../constants/utils.dart';
 import '../widgets/custom_textfield.dart';
 
 enum Auth { signin, signup }
@@ -23,17 +22,49 @@ class _AuthScreenState extends State<AuthScreen> {
   final _signupFormKey = GlobalKey<FormState>();
   final _signinFormKey = GlobalKey<FormState>();
   final TextEditingController textEditingController = TextEditingController();
-  final TextEditingController passwordEditingController = TextEditingController();
+  final TextEditingController passwordEditingController =
+      TextEditingController();
   final TextEditingController emailEditingController = TextEditingController();
   final AuthService authService = AuthService();
 
-  void signupUser(){
-    authService.signUpUser(context: context, name: textEditingController.text, email: emailEditingController.text, password: passwordEditingController.text);
+  @override
+  void initState() {
+    super.initState();
   }
-  void loginUser(){
-      authService.loginUser(context: context,email: emailEditingController.text, password: passwordEditingController.text);
-    }
 
+  void signupUser() {
+    try {
+      authService.signUpUser(
+        context: context,
+        name: textEditingController.text,
+        email: emailEditingController.text,
+        password: passwordEditingController.text,
+      );
+      showSnackbar(context, 'Account created! Click on Login!');
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  void loginUser() {
+    try {
+      authService.loginUser(
+        context: context,
+        email: emailEditingController.text,
+        password: passwordEditingController.text,
+      );
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  @override
+  void dispose() {
+    textEditingController.dispose();
+    passwordEditingController.dispose();
+    emailEditingController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +81,9 @@ class _AuthScreenState extends State<AuthScreen> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
               ),
               ListTile(
-                tileColor: _auth == Auth.signup ? GlobalVariables.backgroundColor : GlobalVariables.greyBackgroundCOlor,
+                tileColor: _auth == Auth.signup
+                    ? GlobalVariables.backgroundColor
+                    : GlobalVariables.greyBackgroundCOlor,
                 title: const Text(
                   'Create Account',
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -83,6 +116,9 @@ class _AuthScreenState extends State<AuthScreen> {
                           controller: textEditingController,
                           hintText: 'Enter your name',
                           validator: (value) {
+                            print(
+                              'Name validation: ${value?.isEmpty ?? true ? 'FAILED' : 'PASSED'}',
+                            );
                             if (value == null || value.isEmpty) {
                               return 'Please enter your name';
                             }
@@ -95,20 +131,25 @@ class _AuthScreenState extends State<AuthScreen> {
                           controller: emailEditingController,
                           hintText: 'Enter your email',
                           validator: (value) {
+                            print(
+                              ' Email validation: ${value?.isEmpty ?? true ? 'FAILED' : 'PASSED'}',
+                            );
                             if (value == null || value.isEmpty) {
                               return 'Please enter your email';
                             }
                             return null;
                           },
-                        ) ,
-                        SizedBox(height: 8,),
-
+                        ),
+                        SizedBox(height: 8),
                         CustomTextfield(
                           iconData: Icon(Icons.password_rounded),
                           controller: passwordEditingController,
                           hintText: 'Enter your password',
-                          obscureText: true,
+                          obscureText: false,
                           validator: (value) {
+                            print(
+                              'Password validation: ${value?.isEmpty ?? true ? 'FAILED' : 'PASSED'}',
+                            );
                             if (value == null || value.isEmpty) {
                               return 'Please enter your password';
                             }
@@ -121,11 +162,11 @@ class _AuthScreenState extends State<AuthScreen> {
                           child: CustomElevatedbutton(
                             text: 'Sign Up',
                             onPressed: () {
-                              if(_signupFormKey.currentState!.validate()){
+                              if (_signupFormKey.currentState!.validate()) {
                                 signupUser();
-                              }
+                              } else {}
                             },
-                          )
+                          ),
                         ),
                       ],
                     ),
@@ -133,7 +174,9 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
 
               ListTile(
-                tileColor: _auth == Auth.signup ? GlobalVariables.backgroundColor : GlobalVariables.greyBackgroundCOlor,
+                tileColor: _auth == Auth.signin
+                    ? GlobalVariables.greyBackgroundCOlor
+                    : GlobalVariables.backgroundColor,
                 title: const Text(
                   'Log In',
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -161,26 +204,30 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: Column(
                       children: [
                         SizedBox(height: 8),
-
                         CustomTextfield(
                           iconData: Icon(Icons.alternate_email),
                           controller: emailEditingController,
                           hintText: 'Enter your email',
                           validator: (value) {
+                            print(
+                              ' Email validation: ${value?.isEmpty ?? true ? 'FAILED' : 'PASSED'}',
+                            );
                             if (value == null || value.isEmpty) {
                               return 'Please enter your email';
                             }
                             return null;
                           },
-                        ) ,
-                        SizedBox(height: 8,),
-
+                        ),
+                        SizedBox(height: 8),
                         CustomTextfield(
                           iconData: Icon(Icons.password_rounded),
                           controller: passwordEditingController,
                           hintText: 'Enter your password',
-                          obscureText: true,
+                          obscureText: false,
                           validator: (value) {
+                            print(
+                              ' Password validation: ${value?.isEmpty ?? true ? 'FAILED' : 'PASSED'}',
+                            );
                             if (value == null || value.isEmpty) {
                               return 'Please enter your password';
                             }
@@ -189,15 +236,15 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                         SizedBox(height: 12),
                         SizedBox(
-                            width: double.infinity,
-                            child: CustomElevatedbutton(
-                              text: 'Log In',
-                              onPressed: () {
-                                if(_signinFormKey.currentState!.validate()){
-                                  loginUser();
-                                }
-                              },
-                            )
+                          width: double.infinity,
+                          child: CustomElevatedbutton(
+                            text: 'Log In',
+                            onPressed: () {
+                              if (_signinFormKey.currentState!.validate()) {
+                                loginUser();
+                              } else {}
+                            },
+                          ),
                         ),
                       ],
                     ),

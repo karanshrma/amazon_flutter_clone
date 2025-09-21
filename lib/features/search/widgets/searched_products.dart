@@ -7,83 +7,95 @@ class SearchedProducts extends StatelessWidget {
 
   final Product product;
 
-
   @override
   Widget build(BuildContext context) {
+    // Calculate average rating (fixed accumulation + safe null checks)
     double averageRating = 0;
-
     double totalRating = 0;
-    for (int i = 0; i < product.rating!.length; i++) {
-      totalRating = product.rating![i].rating;
+    final ratings = product.rating ?? [];
+    for (var r in ratings) {
+      totalRating += r.rating;
+    }
+    if (ratings.isNotEmpty) {
+      averageRating = totalRating / ratings.length;
+    }
 
-    }
-    if (totalRating != 0) {
-      averageRating = totalRating / product.rating!.length;
-    }
-    return Column(
-      children: [
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
-            children: [
-              Image.network(
-                product.images[0],
-                fit: BoxFit.contain,
-                width: 135,
-                height: 135,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image: fixed but small width so it doesn't dominate space.
+          // Use ClipRRect to round corners and BoxFit.cover for consistent crop.
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              product.images.isNotEmpty ? product.images[0] : '',
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                width: 100,
+                height: 100,
+                color: Colors.grey[200],
+                child: const Icon(Icons.image_not_supported),
               ),
-              Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    width: 235,
-                    child: Text(
-                      product.name,
-                      style: const TextStyle(fontSize: 16),
-                      maxLines: 2,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(left: 10, top: 5),
-                    width: 235,
-                    child: Stars(rating: averageRating),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(left: 10, top: 5),
-                    width: 235,
-                    child: Text(
-                      '\$${product.price}',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(left: 10),
-                    width: 235,
-                    child: const Text(
-                      'Eligible for free delivery',
-                      maxLines: 2,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(left: 10),
-                    width: 235,
-                    child: const Text(
-                      'In stock',
-                      style: TextStyle(color: Colors.teal),
-                      maxLines: 2,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
-        ),
-        Container(),
-      ],
+
+          const SizedBox(width: 10),
+
+          // Use Expanded so the right-side column takes remaining space and won't overflow.
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Product name: allow 2 lines and ellipsis
+                Text(
+                  product.name,
+                  style: const TextStyle(fontSize: 16),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                const SizedBox(height: 6),
+
+                // Stars widget with some left spacing removed (we're already aligned)
+                Stars(rating: averageRating),
+
+                const SizedBox(height: 6),
+
+                // Price
+                Text(
+                  '\$${product.price}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                const SizedBox(height: 6),
+
+                // Extra info
+                const Text(
+                  'Eligible for free delivery',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'In stock',
+                  style: TextStyle(color: Colors.teal),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:amazon_flutter_clone/features/admin/screens/post_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../constants/global_variables.dart';
+import '../../account/services/account_service.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -28,12 +29,19 @@ class _AdminScreenState extends State<AdminScreen> {
       _page = page;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
         child: AppBar(
+          actions: <Widget>[
+            IconButton(
+              onPressed: () => AccountService().logout(context),
+              icon: const Icon(Icons.logout, color: Colors.black),
+            ),
+          ],
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: GlobalVariables.appBarGradient,
@@ -45,7 +53,7 @@ class _AdminScreenState extends State<AdminScreen> {
               Container(
                 alignment: Alignment.topLeft,
                 child: Image.asset(
-                  'lib/assets/images/amazon_in.png',
+                  'assets/images/amazon_in.png',
                   width: 120,
                   height: 45,
                   color: Colors.black,
@@ -70,7 +78,7 @@ class _AdminScreenState extends State<AdminScreen> {
         unselectedItemColor: GlobalVariables.unselectedNavBarColor,
         backgroundColor: GlobalVariables.backgroundColor,
         iconSize: 28,
-        onTap: updatePage ,
+        onTap: updatePage,
         items: [
           //Posts
           BottomNavigationBarItem(

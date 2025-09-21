@@ -32,6 +32,7 @@ class AuthService {
         token: '',
         cart: [],
       );
+
       http.Response res = await http.post(
         Uri.parse('$uri/api/signup'),
         body: user.toJson(),
@@ -39,11 +40,19 @@ class AuthService {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
+
       httpErrorHandle(
         response: res,
         context: context,
         onSuccess: () {
           showSnackbar(context, 'Account created! Login with same credentials');
+
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            BottomBar.routeName,
+                (route) => false,
+          );
+          // NOTE: No navigation happens here - user needs to manually switch to login
         },
       );
     } catch (e) {
@@ -57,29 +66,36 @@ class AuthService {
     required String password,
   }) async {
     try {
+      final requestBody = jsonEncode({'email': email, 'password': password});
+
       http.Response res = await http.post(
         Uri.parse('$uri/api/login'),
-        body: jsonEncode({'email': email, 'password': password}),
+        body: requestBody,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
+
       httpErrorHandle(
         response: res,
         context: context,
         onSuccess: () async {
-          SharedPreferences sharedPreferences =
-              await SharedPreferences.getInstance();
-          Provider.of<UserProvider>(context, listen: false).setUser(res.body);
-          await sharedPreferences.setString(
-            'x-auth-token',
-            jsonDecode(res.body)['token'],
-          );
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            BottomBar.routeName,
-            (route) => false,
-          );
+          try {
+            SharedPreferences sharedPreferences =
+                await SharedPreferences.getInstance();
+
+            Provider.of<UserProvider>(context, listen: false).setUser(res.body);
+
+            final token = jsonDecode(res.body)['token'];
+
+            await sharedPreferences.setString('x-auth-token', token);
+
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              BottomBar.routeName,
+              (route) => false,
+            );
+          } catch (e) {}
         },
       );
     } catch (e) {
@@ -91,18 +107,24 @@ class AuthService {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
+
       String? token = sharedPreferences.getString('x-auth-token');
+
       if (token == null) {
         sharedPreferences.setString('x-auth-token', '');
+        return;
       }
+
       var tokenRes = await http.post(
         Uri.parse('$uri/tokenIsValid'),
         headers: <String, String>{
           'Content-type': 'application/json; charset=UTF-8',
-          'x-auth-token': token!,
+          'x-auth-token': token,
         },
       );
+
       var response = jsonDecode(tokenRes.body);
+
       if (response == true) {
         http.Response userResponse = await http.get(
           Uri.parse('$uri/'),
@@ -111,9 +133,10 @@ class AuthService {
             'x-auth-token': token,
           },
         );
+
         var userProvider = Provider.of<UserProvider>(context, listen: false);
         userProvider.setUser(userResponse.body);
-      }
+      } else {}
     } catch (e) {
       showSnackbar(context, e.toString());
     }

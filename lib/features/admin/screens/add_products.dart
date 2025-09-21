@@ -1,13 +1,10 @@
 import 'dart:io';
-
 import 'package:amazon_flutter_clone/constants/utils.dart';
-import 'package:amazon_flutter_clone/features/admin/screens/admin_screen.dart';
 import 'package:amazon_flutter_clone/features/admin/services/admin_service.dart';
 import 'package:amazon_flutter_clone/features/auth/widgets/custom_textfield.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-
 import '../../../constants/global_variables.dart';
 import '../../../common/widgets/custom_elevatedbutton.dart';
 
@@ -27,7 +24,7 @@ class _AddProductsState extends State<AddProducts> {
   final TextEditingController quantityController = TextEditingController();
   final AdminService adminService = AdminService();
   List<File> images = [];
-
+  String category = 'Mobiles';
   final _addProductKey = GlobalKey<FormState>();
 
   List<String> productCategories = [
@@ -38,25 +35,42 @@ class _AddProductsState extends State<AddProducts> {
     'Fashion',
   ];
 
-  void sellProducts(){
-    if(_addProductKey.currentState!.validate() && images.isNotEmpty){
-      adminService.sellProducts(context: context,
-          name: productNameController.text,
-          description: productNameController.text,
-          price: double.parse(priceController.text), quantity: double.parse(quantityController.text), category: category, images: images);
-    }
+  void sellProducts() {
 
+
+
+
+    if (_addProductKey.currentState!.validate() && images.isNotEmpty) {
+
+
+
+
+
+
+
+
+      adminService.sellProducts(
+        context: context,
+        name: productNameController.text,
+        description: descriptionController.text,
+        price: double.parse(priceController.text),
+        quantity: double.parse(quantityController.text),
+        category: category,
+        images: images,
+      );
+    } else {
+
+    }
   }
 
   void selectImages() async {
+
     var res = await pickImages();
+
     setState(() {
       images = res;
     });
   }
-
-  String category = 'Mobiles';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

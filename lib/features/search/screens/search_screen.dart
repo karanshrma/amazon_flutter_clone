@@ -44,6 +44,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: AppBar(
@@ -89,7 +90,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                         ),
                         prefixIcon: InkWell(
-                          onTap: () {},
+                          onTap: () => navigateToSearch,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 6),
                             child: GestureDetector(
@@ -107,13 +108,6 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ),
               ),
-              Container(
-                color: Colors.transparent,
-                height: 42,
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                child: const Icon(Icons.mic, color: Colors.black, size: 25),
-              ),
-              SizedBox(height: 3),
             ],
           ),
         ),

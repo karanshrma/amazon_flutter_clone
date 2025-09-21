@@ -1,4 +1,5 @@
 import 'package:amazon_flutter_clone/features/auth/screens/auth_screen.dart';
+import 'package:amazon_flutter_clone/features/cart/screens/cart_screen.dart';
 import 'package:amazon_flutter_clone/models/order.dart';
 import 'package:amazon_flutter_clone/models/product.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,8 @@ Route<dynamic> generateRoute(RouteSettings routesettings) {
         settings: routesettings,
         builder: (_) => ProductDetailsScreen(product: product),
       );
-
+    case CartScreen.routeName:
+      return MaterialPageRoute(builder: (_) => const CartScreen());
     case AddressScreen.routeName:
       var totalAmount = routesettings.arguments as String;
       return MaterialPageRoute(

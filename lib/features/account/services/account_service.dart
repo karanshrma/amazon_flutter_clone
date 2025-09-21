@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:amazon_flutter_clone/features/account/widgets/orders.dart';
 import 'package:amazon_flutter_clone/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +34,7 @@ class AccountService {
           var decodedResponse = jsonDecode(res.body);
           // Then iterate through the list length
           for (int i = 0; i < decodedResponse.length; i++) {
-            orderList.add(Order.fromJson(decodedResponse[i] as String));
+            orderList.add(Order.fromMap(decodedResponse[i] as Map<String , dynamic>));
           }
         },
       );
@@ -50,15 +49,13 @@ class AccountService {
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       await sharedPreferences.setString('x-auth-token', '');
       Navigator.pushNamedAndRemoveUntil(context, AuthScreen.routeName , (route) => false);
-
-
     } catch(e){
       showSnackbar(context, e.toString());
     }
   }
 
 
-  Future<Product> fetchDealofDay({
+  Future<Product> fetchDealOfDay({
     required BuildContext context,
     required String category,
   }) async {
@@ -66,7 +63,7 @@ class AccountService {
     Product product = Product(
       name: 'name',
       description: 'description',
-      quantity: 0.0,
+      quantity: 0,
       images: [],
       category: 'category',
       price: 0.0,

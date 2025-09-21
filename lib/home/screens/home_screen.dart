@@ -18,12 +18,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  void navigateToSearch(String query){
-    Navigator.pushNamed(context, SearchScreen.routeName , arguments: query);
+  void navigateToSearch(String query) {
+
+    Navigator.pushNamed(context, SearchScreen.routeName, arguments: query);
   }
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context).user;
+
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
@@ -39,47 +43,53 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: Container(
                   height: 42,
-
                   margin: const EdgeInsets.only(left: 12),
                   child: Material(
                     borderRadius: BorderRadius.circular(7),
                     elevation: 1,
                     child: TextFormField(
-                      onFieldSubmitted: navigateToSearch,
+                      onFieldSubmitted: (value) {
+
+                        navigateToSearch(value);
+                      },
                       decoration: InputDecoration(
                         hintText: 'Search Amazon.in!',
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           color: Colors.grey,
                           fontWeight: FontWeight.w500,
-                          fontSize: 17
+                          fontSize: 17,
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(7)),
+                          borderSide: BorderSide(
+                            color: Colors.orange,
+                            width: 2,
+                          ),
                         ),
                         filled: true,
                         fillColor: Colors.white,
                         contentPadding: const EdgeInsets.only(top: 10),
-                        border: OutlineInputBorder(
+                        border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(7)),
                           borderSide: BorderSide.none,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(7),
-                          ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(7)),
                           borderSide: BorderSide(
                             color: Colors.black38,
                             width: 1,
                           ),
                         ),
                         prefixIcon: InkWell(
-                          onTap: () {},
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 6),
-                            child: GestureDetector(
-                              onTap: () => navigateToSearch,
-                              child: const Icon(
-                                Icons.search,
-                                color: Colors.black,
-                                size: 23,
-                              ),
+                          onTap: () {
+
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 6),
+                            child: Icon(
+                              Icons.search,
+                              color: Colors.black,
+                              size: 23,
                             ),
                           ),
                         ),
@@ -88,31 +98,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              Container(
-                color: Colors.transparent,
-                height: 42,
-                margin: const EdgeInsets.symmetric(horizontal: 10, ),
-                child: const Icon(Icons.mic , color: Colors.black , size: 25,),
-              ),
-              SizedBox(height: 3,)
             ],
           ),
         ),
       ),
-      body: SingleChildScrollView(
+      body: const SingleChildScrollView(
         child: Column(
-          children: const [
+          children: [
             AddressBox(),
-            SizedBox(height: 10,),
+            SizedBox(height: 10),
             TopCategories(),
-            SizedBox(height: 10,),
+            SizedBox(height: 10),
             CarouselImage(),
-            SizedBox(height: 10,),
-            DealOfTheDay()
-        
+            SizedBox(height: 10),
+            DealOfTheDay(),
           ],
         ),
       ),
     );
   }
 }
+

@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
 
 import '../models/user.dart';
 
@@ -17,12 +16,12 @@ class UserProvider extends ChangeNotifier {
 
   User get user => _user;
 
-  void setUser(String user){
+  void setUser(String user) {
     _user = User.fromJson(user);
     notifyListeners();
-
   }
-  void setUserFromModel(User user){
+
+  void setUserFromModel(User user) {
     _user = user;
     notifyListeners();
   }

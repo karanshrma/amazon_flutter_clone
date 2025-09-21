@@ -1,12 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:amazon_flutter_clone/constants/utils.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-
 import '../../../constants/error_handling.dart';
 import '../../../constants/global_variables.dart';
 import '../../../models/order.dart';
@@ -31,11 +29,20 @@ class AdminService {
       List<String> imageUrls = [];
 
       for (int i = 0; i < images.length; i++) {
+
         CloudinaryResponse response = await cloudinary.uploadFile(
           CloudinaryFile.fromFile(images[i].path, folder: name),
         );
         imageUrls.add(response.secureUrl);
       }
+      if (imageUrls.isNotEmpty &&
+          imageUrls.first.startsWith('https://images.unsplash.com')) {
+        final migratedUrl =
+        await cacheImageInCloudinary(imageUrls.first, 'imported');
+        imageUrls[0] = migratedUrl;
+      }
+
+
       Product product = Product(
         name: name,
         description: description,
@@ -44,6 +51,9 @@ class AdminService {
         category: category,
         price: price,
       );
+
+
+
       http.Response res = await http.post(
         Uri.parse('$uri/admin/add-product'),
         headers: {
@@ -53,15 +63,20 @@ class AdminService {
         body: product.toJson(),
       );
 
+
+
+
       httpErrorHandle(
         response: res,
         context: context,
         onSuccess: () {
+
           showSnackbar(context, 'Product Added Successfully!');
           Navigator.pop(context);
         },
       );
     } catch (e) {
+
       showSnackbar(context, e.toString());
     }
   }
@@ -70,6 +85,7 @@ class AdminService {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     List<Product> productList = [];
     try {
+
       http.Response res = await http.get(
         Uri.parse('$uri/admin/get-products'),
         headers: {
@@ -77,19 +93,35 @@ class AdminService {
           'x-auth-token': userProvider.user.token,
         },
       );
-      httpErrorHandle(
-        response: res,
-        context: context,
-        onSuccess: () {
-          // Fixed: Get the decoded response first
-          var decodedResponse = jsonDecode(res.body);
-          // Then iterate through the list length
-          for (int i = 0; i < decodedResponse.length; i++) {
-            productList.add(Product.fromJson(decodedResponse[i] as String));
+
+
+
+
+      if (res.statusCode == 200) {
+        var decodedResponse = jsonDecode(res.body) as List<dynamic>;
+
+
+        for (int i = 0; i < decodedResponse.length; i++) {
+          try {
+            print("🔄 Processing product $i");
+            Map<String, dynamic> productMap =
+                decodedResponse[i] as Map<String, dynamic>;
+            Product product = Product.fromMap(productMap);
+            productList.add(product);
+            print("✅ Successfully added product: ${product.name}");
+          } catch (e) {
+            print("❌ Error parsing product at index $i: $e");
+            print("🔍 Product data: ${decodedResponse[i]}");
           }
-        },
-      );
+        }
+
+        print("✅ Successfully fetched ${productList.length} products");
+      } else {
+        print("❌ HTTP Error: ${res.statusCode}");
+        showSnackbar(context, "Failed to fetch products: ${res.statusCode}");
+      }
     } catch (e) {
+      print("❌ Error in fetchAllProducts: $e");
       showSnackbar(context, e.toString());
     }
     return productList;
@@ -99,6 +131,7 @@ class AdminService {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     List<Order> orderList = [];
     try {
+      print("🟢 [fetchAllOrders] Fetching...");
       http.Response res = await http.get(
         Uri.parse('$uri/admin/get-orders'),
         headers: {
@@ -106,19 +139,26 @@ class AdminService {
           'x-auth-token': userProvider.user.token,
         },
       );
+
+      print("📡 Response status: ${res.statusCode}");
+      print("📡 Response body: ${res.body}");
+
       httpErrorHandle(
         response: res,
         context: context,
         onSuccess: () {
-          // Fixed: Get the decoded response first
           var decodedResponse = jsonDecode(res.body);
-          // Then iterate through the list length
+          print("📦 Decoded orders length: ${decodedResponse.length}");
           for (int i = 0; i < decodedResponse.length; i++) {
-            orderList.add(Order.fromJson(decodedResponse[i] as String));
+            // Fix: Use fromMap instead of fromJson, and cast to Map<String, dynamic>
+            orderList.add(
+              Order.fromMap(decodedResponse[i] as Map<String, dynamic>),
+            );
           }
         },
       );
     } catch (e) {
+      print("❌ Error in fetchAllOrders: $e");
       showSnackbar(context, e.toString());
     }
     return orderList;
@@ -132,6 +172,7 @@ class AdminService {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
+      print("🟢 [deleteProduct] Deleting product: ${product.id}");
       http.Response res = await http.post(
         Uri.parse('$uri/admin/delete-product'),
         headers: {
@@ -141,14 +182,19 @@ class AdminService {
         body: jsonEncode({'id': product.id}),
       );
 
+      print("📡 Response status: ${res.statusCode}");
+      print("📡 Response body: ${res.body}");
+
       httpErrorHandle(
         response: res,
         context: context,
         onSuccess: () {
-          onSuccess;
+          print("✅ Product deleted successfully");
+          onSuccess();
         },
       );
     } catch (e) {
+      print("❌ Error in deleteProduct: $e");
       showSnackbar(context, e.toString());
     }
   }
@@ -162,17 +208,27 @@ class AdminService {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
+      print(
+        "🟢 [changeOrderStatus] Changing order: ${order.id} → status: $status",
+      );
       http.Response res = await http.post(
         Uri.parse('$uri/admin/change-order-status'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'x-auth-token': userProvider.user.token,
         },
-        body: jsonEncode({'id': order.id}),
+        body: jsonEncode({
+          'id': order.id,
+          'status': status, // Fix: Include status in the body
+        }),
       );
+
+      print("📡 Response status: ${res.statusCode}");
+      print("📡 Response body: ${res.body}");
 
       httpErrorHandle(response: res, context: context, onSuccess: onSuccess);
     } catch (e) {
+      print("❌ Error in changeOrderStatus: $e");
       showSnackbar(context, e.toString());
     }
   }
@@ -182,6 +238,7 @@ class AdminService {
     List<Sales> sales = [];
     int totalEarning = 0;
     try {
+      print("🟢 [getEarnings] Fetching analytics...");
       http.Response res = await http.get(
         Uri.parse('$uri/admin/analytics'),
         headers: {
@@ -189,12 +246,18 @@ class AdminService {
           'x-auth-token': userProvider.user.token,
         },
       );
+
+      print("📡 Response status: ${res.statusCode}");
+      print("📡 Response body: ${res.body}");
+
       httpErrorHandle(
         response: res,
         context: context,
         onSuccess: () {
           var response = jsonDecode(res.body);
           totalEarning = response['totalEarnings'];
+          print("💰 Total earnings: $totalEarning");
+
           sales = [
             Sales('Mobiles', response['mobileEarnings']),
             Sales('Essentials', response['essentialEarnings']),
@@ -202,11 +265,21 @@ class AdminService {
             Sales('Appliances', response['applianceEarnings']),
             Sales('Fashion', response['fashionEarnings']),
           ];
+          print("📊 Sales breakdown: $sales");
         },
       );
     } catch (e) {
+      print("❌ Error in getEarnings: $e");
       showSnackbar(context, e.toString());
     }
     return {'sales': sales, 'totalEarnings': totalEarning};
   }
+  Future<String> cacheImageInCloudinary(String url, String folder) async {
+    final cloud = CloudinaryPublic('dfpolwe00', 'unsigned_preset_karan');
+    final res = await cloud.uploadFile(
+      CloudinaryFile.fromUrl(url, folder: folder),
+    );
+    return res.secureUrl;
+  }
+
 }

@@ -1,5 +1,5 @@
-import 'package:amazon_flutter_clone/common/widgets/custom_elevatedbutton.dart';
-import 'package:amazon_flutter_clone/features/address/screens/address_screen.dart';
+import 'package:amazon_flutter_clone/features/admin/services/admin_service.dart';
+import 'package:amazon_flutter_clone/features/cart/widgets/cart_length.dart';
 import 'package:amazon_flutter_clone/features/cart/widgets/cart_subtotal.dart';
 import 'package:amazon_flutter_clone/home/widgets/address_box.dart';
 import 'package:amazon_flutter_clone/providers/user_provider.dart';
@@ -11,6 +11,8 @@ import '../../search/screens/search_screen.dart';
 import '../widgets/cart_product.dart';
 
 class CartScreen extends StatefulWidget {
+  static const String routeName = '/cart-screen';
+
   const CartScreen({super.key});
 
   @override
@@ -21,16 +23,20 @@ class _CartScreenState extends State<CartScreen> {
   void navigateToSearch(String query) {
     Navigator.pushNamed(context, SearchScreen.routeName, arguments: query);
   }
-  void navigateToAddress(int sum) {
-    Navigator.pushNamed(context, AddressScreen.routeName , arguments: sum.toString());
-  }
 
+  // void navigateToAddress(int sum) {
+  //   Navigator.pushNamed(
+  //     context,
+  //     AddressScreen.routeName,
+  //     arguments: sum.toString(),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
+    final AdminService adminService = AdminService();
     final user = context.watch<UserProvider>().user;
-    int sum = 0;
-    user.cart.map((e) => sum += e['quantity'] * e['product']['price'] as int).toList();
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
@@ -40,14 +46,15 @@ class _CartScreenState extends State<CartScreen> {
               gradient: GlobalVariables.appBarGradient,
             ),
           ),
+          titleSpacing: 0,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Container(
                   height: 42,
-
-                  margin: const EdgeInsets.only(left: 12),
+                  margin: const EdgeInsets.only(left: 8, right: 15),
+                  // Reduced left margin
                   child: Material(
                     borderRadius: BorderRadius.circular(7),
                     elevation: 1,
@@ -65,7 +72,17 @@ class _CartScreenState extends State<CartScreen> {
                         contentPadding: const EdgeInsets.only(top: 10),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(7)),
-                          borderSide: BorderSide.none,
+                          borderSide: BorderSide(
+                            color: Colors.black38,
+                            width: 1,
+                          ),
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(7)),
+                          borderSide: BorderSide(
+                            color: Colors.orange,
+                            width: 2,
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: const BorderRadius.all(
@@ -76,17 +93,14 @@ class _CartScreenState extends State<CartScreen> {
                             width: 1,
                           ),
                         ),
-                        prefixIcon: InkWell(
-                          onTap: () {},
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 6),
-                            child: GestureDetector(
-                              onTap: () => navigateToSearch,
-                              child: const Icon(
-                                Icons.search,
-                                color: Colors.black,
-                                size: 23,
-                              ),
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(left: 4),
+                          child: GestureDetector(
+                            onTap: () => navigateToSearch,
+                            child: const Icon(
+                              Icons.search,
+                              color: Colors.black,
+                              size: 23,
                             ),
                           ),
                         ),
@@ -95,41 +109,30 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                 ),
               ),
-              Container(
-                color: Colors.transparent,
-                height: 42,
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                child: const Icon(Icons.mic, color: Colors.black, size: 25),
-              ),
-              SizedBox(height: 3),
             ],
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const AddressBox(),
-            const CartSubtotal(),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CustomElevatedbutton(
-                color: Colors.yellow,
-                text: 'Proceed to buy (${user.cart.length} items)',
-                onPressed: () => navigateToAddress(),
-              ),
-            ),
-            const SizedBox(height: 15),
-            Container(color: Colors.black12.withOpacity(0.08), height: 1),
-            const SizedBox(height: 5),
-            ListView.builder(
-              itemCount: user.cart.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await adminService.fetchAllOrders(context);
+          setState(() {});
+        },
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const AddressBox(),
+              const CartSubtotal(),
+              const CartLength(),
+              const SizedBox(height: 15),
+              Container(color: Colors.white, height: 1),
+              const SizedBox(height: 5),
+              ...user.cart.asMap().entries.map((entry) {
+                int index = entry.key;
                 return CartProduct(index: index);
-              },
-            ),
-          ],
+              }),
+            ],
+          ),
         ),
       ),
     );

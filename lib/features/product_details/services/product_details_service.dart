@@ -54,7 +54,15 @@ class ProductDetailsService {
   }) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
+
+
+
+
+
+
     try {
+
+
       http.Response res = await http.post(
         Uri.parse('$uri/api/rate-product'),
         headers: {
@@ -67,14 +75,20 @@ class ProductDetailsService {
         }),
       );
 
+
+
+
       httpErrorHandle(
         response: res,
         context: context,
         onSuccess: () {
+
         },
       );
     } catch (e) {
+
       showSnackbar(context, e.toString());
     }
   }
+
 }

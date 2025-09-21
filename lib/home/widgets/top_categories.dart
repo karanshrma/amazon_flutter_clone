@@ -6,26 +6,38 @@ import '../screens/category_deals_screen.dart';
 class TopCategories extends StatelessWidget {
   const TopCategories({super.key});
 
-  void navigateToCategory(BuildContext context , String category){
-    Navigator.pushNamed(context, CategoryDealsScreen.routeName , arguments: category );
+  void navigateToCategory(BuildContext context, String category) {
 
+    Navigator.pushNamed(
+      context,
+      CategoryDealsScreen.routeName,
+      arguments: category,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80, // Increased height to accommodate text
+      height: 80,
       color: Colors.white,
       child: ListView.builder(
         itemCount: GlobalVariables.categoryImages.length,
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 8),
         itemBuilder: (context, index) {
+          final category = GlobalVariables.categoryImages[index]['title']!;
+          final image = GlobalVariables.categoryImages[index]['image']!;
+
+
+
           return Container(
-            width: 75, // Use Container width instead of itemExtent for better control
+            width: 75,
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: GestureDetector(
-              onTap: () =>navigateToCategory(context , GlobalVariables.categoryImages[index]['title']!,),
+              onTap: () {
+
+                navigateToCategory(context, category);
+              },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -46,9 +58,10 @@ class TopCategories extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(22.5),
                       child: Image.asset(
-                        GlobalVariables.categoryImages[index]['image']!,
+                        image,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
+
                           return Container(
                             color: Colors.grey[300],
                             child: const Icon(
@@ -64,7 +77,7 @@ class TopCategories extends StatelessWidget {
                   const SizedBox(height: 4),
                   Expanded(
                     child: Text(
-                      GlobalVariables.categoryImages[index]['title']!,
+                      category,
                       style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w400,
@@ -84,3 +97,4 @@ class TopCategories extends StatelessWidget {
     );
   }
 }
+
