@@ -29,8 +29,8 @@ This project was developed using **Flutter** for the cross-platform frontend and
 | **Frontend (Client)** | **Flutter**, **Dart**, **Provider** (State Management) |
 | **Backend (Server)** | **Node.js**, **Express.js** |
 | **Database** | **MongoDB**, **Mongoose** (ODM) |
-| **Payments** | **Google Pay (GPay)** API Integration [cite: 15] |
-| **Authentication** | JWT (JSON Web Tokens) for secure Auth [cite: 14] |
+| **Payments** | **Google Pay (GPay)** API Integration  |
+| **Authentication** | JWT (JSON Web Tokens) for secure Auth  |
 
 ## ⚙️ Project Structure
 
