@@ -7,19 +7,19 @@ This project was developed using **Flutter** for the cross-platform frontend and
 ## 🚀 Key Features
 
 ### User-Facing Features
-* [cite_start]**Secure Authentication:** User sign-up, sign-in, and session management[cite: 14].
-* [cite_start]**Product Catalog:** Comprehensive product search, categorization, and browsing[cite: 13].
-* [cite_start]**Deal of the Day:** Dedicated section for daily featured discounts[cite: 13].
-* [cite_start]**Shopping Cart:** Add, update, and remove items with persistent storage[cite: 13].
-* [cite_start]**Ratings & Reviews:** Functionality for users to rate and review products[cite: 13].
-* [cite_start]**Order Tracking:** Real-time status updates for placed orders[cite: 14].
-* [cite_start]**Integrated Checkout:** Seamless checkout experience with **GPay integration** for secure payments[cite: 15].
+* **Secure Authentication:** User sign-up, sign-in, and session management[cite: 14].
+* **Product Catalog:** Comprehensive product search, categorization, and browsing[cite: 13].
+* **Deal of the Day:** Dedicated section for daily featured discounts[cite: 13].
+* **Shopping Cart:** Add, update, and remove items with persistent storage[cite: 13].
+* **Ratings & Reviews:** Functionality for users to rate and review products[cite: 13].
+* **Order Tracking:** Real-time status updates for placed orders[cite: 14].
+* **Integrated Checkout:** Seamless checkout experience with **GPay integration** for secure payments[cite: 15].
 
 ### Admin Panel Features
-* [cite_start]**Order Management:** Full access to view, process, and update the status of all customer orders[cite: 14].
+* **Order Management:** Full access to view, process, and update the status of all customer orders[cite: 14].
 * **Sales Dashboard:** Visual representation of business metrics, including:
-    * [cite_start]Total Sales over time[cite: 16].
-    * [cite_start]Category-wise Sales Graphs for product performance analysis[cite: 16].
+    * Total Sales over time[cite: 16].
+    * Category-wise Sales Graphs for product performance analysis[cite: 16].
 * **Product CRUD:** Tools for creating, viewing, updating, and deleting products.
 
 ## 💻 Tech Stack
@@ -29,8 +29,8 @@ This project was developed using **Flutter** for the cross-platform frontend and
 | **Frontend (Client)** | **Flutter**, **Dart**, **Provider** (State Management) |
 | **Backend (Server)** | **Node.js**, **Express.js** |
 | **Database** | **MongoDB**, **Mongoose** (ODM) |
-| **Payments** | [cite_start]**Google Pay (GPay)** API Integration [cite: 15] |
-| **Authentication** | [cite_start]JWT (JSON Web Tokens) for secure Auth [cite: 14] |
+| **Payments** | **Google Pay (GPay)** API Integration [cite: 15] |
+| **Authentication** | JWT (JSON Web Tokens) for secure Auth [cite: 14] |
 
 ## ⚙️ Project Structure
 
