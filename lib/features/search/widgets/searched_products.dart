@@ -9,13 +9,13 @@ class SearchedProducts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Calculate average rating (fixed accumulation + safe null checks)
     double averageRating = 0;
     double totalRating = 0;
     final ratings = product.rating ?? [];
     for (var r in ratings) {
       totalRating += r.rating;
     }
+
     if (ratings.isNotEmpty) {
       averageRating = totalRating / ratings.length;
     }
@@ -25,8 +25,7 @@ class SearchedProducts extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image: fixed but small width so it doesn't dominate space.
-          // Use ClipRRect to round corners and BoxFit.cover for consistent crop.
+
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.network(
@@ -45,12 +44,11 @@ class SearchedProducts extends StatelessWidget {
 
           const SizedBox(width: 10),
 
-          // Use Expanded so the right-side column takes remaining space and won't overflow.
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Product name: allow 2 lines and ellipsis
+
                 Text(
                   product.name,
                   style: const TextStyle(fontSize: 16),
@@ -60,12 +58,12 @@ class SearchedProducts extends StatelessWidget {
 
                 const SizedBox(height: 6),
 
-                // Stars widget with some left spacing removed (we're already aligned)
+
                 Stars(rating: averageRating),
 
                 const SizedBox(height: 6),
 
-                // Price
+
                 Text(
                   '\$${product.price}',
                   style: const TextStyle(
@@ -78,7 +76,7 @@ class SearchedProducts extends StatelessWidget {
 
                 const SizedBox(height: 6),
 
-                // Extra info
+
                 const Text(
                   'Eligible for free delivery',
                   maxLines: 1,

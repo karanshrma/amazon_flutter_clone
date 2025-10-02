@@ -1,5 +1,5 @@
 import 'package:amazon_flutter_clone/common/widgets/custom_elevatedbutton.dart';
-import 'package:amazon_flutter_clone/constants/utils.dart';
+
 import 'package:amazon_flutter_clone/features/address/screens/address_screen.dart';
 import 'package:amazon_flutter_clone/features/cart/screens/cart_screen.dart';
 import 'package:amazon_flutter_clone/features/product_details/services/product_details_service.dart';
@@ -156,124 +156,126 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.product.name,
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                  Stars(rating: averageRating),
-                ],
-              ),
-            ),
-            CarouselSlider(
-              items: widget.product.images.map((i) {
-                return Builder(
-                  builder: (BuildContext context) => Image.network(
-                    i,
-                    fit: BoxFit.contain,
-                    height: 300,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.asset(
-                        "assets/images/default.jpg", // your fallback image
-                        fit: BoxFit.cover,
-                      );
-                    },
-                  ),
-                );
-              }).toList(),
-              options: CarouselOptions(viewportFraction: 1, height: 200),
-            ),
-            SizedBox(height: 5),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: RichText(
-                text: TextSpan(
-                  text: 'Deal Price: ',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextSpan(
-                      text: '\$${widget.product.price}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.red,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    Text(
+                      widget.product.name,
+                      style: const TextStyle(fontSize: 20),
                     ),
+                    Stars(rating: averageRating),
                   ],
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8.0,
-                vertical: 4.0,
+              CarouselSlider(
+                items: widget.product.images.map((i) {
+                  return Builder(
+                    builder: (BuildContext context) => Image.network(
+                      i,
+                      fit: BoxFit.contain,
+                      height: 300,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          "assets/images/default.jpg", // your fallback image
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    ),
+                  );
+                }).toList(),
+                options: CarouselOptions(viewportFraction: 1, height: 200),
               ),
-              child: Text(widget.product.description),
-            ),
-            SizedBox(height: 5),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: CustomElevatedbutton(
-                text: 'Buy Now',
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    AddressScreen.routeName,
-                    arguments: widget.product.price.toString(),
+              SizedBox(height: 5),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: RichText(
+                  text: TextSpan(
+                    text: 'Deal Price: ',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: '\$${widget.product.price}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.red,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 4.0,
+                ),
+                child: Text(widget.product.description),
+              ),
+              SizedBox(height: 5),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: CustomElevatedbutton(
+                  text: 'Buy Now',
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      AddressScreen.routeName,
+                      arguments: widget.product.price.toString(),
+                    );
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: CustomElevatedbutton(
+                  text: 'Add to Cart',
+                  onPressed: addToCart,
+                  color: Colors.deepOrangeAccent,
+                ),
+              ),
+          
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Text(
+                  'Rate The Product',
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 5),
+              RatingBar.builder(
+                initialRating: myrating,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemPadding: const EdgeInsets.symmetric(horizontal: 4),
+                itemBuilder: (context, _) =>
+                    const Icon(Icons.star, color: GlobalVariables.secondaryColor),
+                onRatingUpdate: (rating) {
+                  productDetailsService.rateProducts(
+                    context: context,
+                    product: widget.product,
+                    rating: rating,
                   );
                 },
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: CustomElevatedbutton(
-                text: 'Add to Cart',
-                onPressed: addToCart,
-                color: Colors.deepOrangeAccent,
-              ),
-            ),
-
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Text(
-                'Rate The Product',
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 5),
-            RatingBar.builder(
-              initialRating: myrating,
-              minRating: 1,
-              direction: Axis.horizontal,
-              allowHalfRating: true,
-              itemCount: 5,
-              itemPadding: const EdgeInsets.symmetric(horizontal: 4),
-              itemBuilder: (context, _) =>
-                  const Icon(Icons.star, color: GlobalVariables.secondaryColor),
-              onRatingUpdate: (rating) {
-                productDetailsService.rateProducts(
-                  context: context,
-                  product: widget.product,
-                  rating: rating,
-                );
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

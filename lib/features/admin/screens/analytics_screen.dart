@@ -1,5 +1,4 @@
 import 'package:amazon_flutter_clone/features/admin/services/admin_service.dart';
-import 'package:amazon_flutter_clone/features/admin/widgets/category_products_chart.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -43,47 +42,90 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   Widget build(BuildContext context) {
     return earnings == null || totalSales == null
         ? const Loader()
-        : Column(
-            children: [
-              Text(
-                '\$$totalSales',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+        : Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+              children: [
+                Text(
+                  '\$$totalSales',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 250,
-                child: BarChart(
-                  BarChartData(
-                    barGroups: dummyEarnings.asMap().entries.map((entry) {
-                      int index = entry.key;
-                      Sales sales = entry.value;
-                      return BarChartGroupData(
-                        x: index,
-                        barRods: [
-                          BarChartRodData(toY: sales.earning.toDouble(), color: Colors.blue),
-                        ],
-                      );
-                    }).toList(),
-                    titlesData: FlTitlesData(
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          getTitlesWidget: (value, meta) {
-                            int index = value.toInt();
-                            if (index < dummyEarnings.length) {
-                              return Text(dummyEarnings[index].label, style: const TextStyle(fontSize: 10));
-                            }
-                            return const Text('');
-                          },
+                SizedBox(
+                  height: 250,
+                  child: BarChart(
+                    BarChartData(
+                      barGroups: dummyEarnings.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        Sales sales = entry.value;
+                        return BarChartGroupData(
+                          x: index,
+                          barRods: [
+                            BarChartRodData(toY: sales.earning.toDouble(), color: Colors.blue , width: 20),
+                          ],
+                        );
+                      }).toList(),
+
+                      titlesData: FlTitlesData(
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              return Text(
+                                value.toInt().toString(),
+                                style: const TextStyle(
+                                  fontSize: 8,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        topTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              return Text(
+                                value.toInt().toString(),
+                                style: const TextStyle(
+                                  fontSize: 8,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        rightTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              return Text(
+                                value.toInt().toString(),
+                                style: const TextStyle(
+                                  fontSize: 8,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              int index = value.toInt();
+                              if (index < dummyEarnings.length) {
+                                return Text(dummyEarnings[index].label, style: const TextStyle(fontSize: 8));
+                              }
+                              return const Text('');
+                            },
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  )
                 )
-              )
-            ],
-          );
+              ],
+            ),
+        );
   }
 }

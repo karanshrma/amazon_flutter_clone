@@ -46,13 +46,11 @@ class AuthService {
         context: context,
         onSuccess: () {
           showSnackbar(context, 'Account created! Login with same credentials');
-
           Navigator.pushNamedAndRemoveUntil(
             context,
             BottomBar.routeName,
                 (route) => false,
           );
-          // NOTE: No navigation happens here - user needs to manually switch to login
         },
       );
     } catch (e) {

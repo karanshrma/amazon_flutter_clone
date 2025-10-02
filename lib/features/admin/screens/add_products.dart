@@ -36,19 +36,7 @@ class _AddProductsState extends State<AddProducts> {
   ];
 
   void sellProducts() {
-
-
-
-
     if (_addProductKey.currentState!.validate() && images.isNotEmpty) {
-
-
-
-
-
-
-
-
       adminService.sellProducts(
         context: context,
         name: productNameController.text,
@@ -58,19 +46,17 @@ class _AddProductsState extends State<AddProducts> {
         category: category,
         images: images,
       );
-    } else {
-
-    }
+    } else {}
   }
 
   void selectImages() async {
-
     var res = await pickImages();
 
     setState(() {
       images = res;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,99 +75,98 @@ class _AddProductsState extends State<AddProducts> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Form(
-          key: _addProductKey,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 20),
-                images.isNotEmpty
-                    ? CarouselSlider(
-                        items: images.map((i) {
-                          return Builder(
-                            builder: (BuildContext context) => Image.file(
-                              i,
-                              fit: BoxFit.cover,
-                              height: 200,
-                            ),
-                          );
-                        }).toList(),
-                        options: CarouselOptions(
-                          viewportFraction: 1,
-                          height: 200,
-                        ),
-                      )
-                    : GestureDetector(
-                        onTap: selectImages,
-                        child: DottedBorder(
-                          options: RectDottedBorderOptions(
-                            dashPattern: const [10, 4],
-                            strokeWidth: 2,
-                            strokeCap: StrokeCap.round,
-                            padding: const EdgeInsets.all(0),
+        child: SafeArea(
+          child: Form(
+            key: _addProductKey,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 20),
+                  images.isNotEmpty
+                      ? CarouselSlider(
+                          items: images.map((i) {
+                            return Builder(
+                              builder: (BuildContext context) =>
+                                  Image.file(i, fit: BoxFit.cover, height: 200),
+                            );
+                          }).toList(),
+                          options: CarouselOptions(
+                            viewportFraction: 1,
+                            height: 200,
                           ),
-                          child: Container(
-                            width: double.infinity,
-                            height: 150,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
+                        )
+                      : GestureDetector(
+                          onTap: selectImages,
+                          child: DottedBorder(
+                            options: RectDottedBorderOptions(
+                              dashPattern: const [10, 4],
+                              strokeWidth: 2,
+                              strokeCap: StrokeCap.round,
+                              padding: const EdgeInsets.all(0),
                             ),
-                            child: const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.folder_open, size: 40),
-                                SizedBox(height: 15),
-                                Text(
-                                  'Select Product Images',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey,
+                            child: Container(
+                              width: double.infinity,
+                              height: 150,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.folder_open, size: 40),
+                                  SizedBox(height: 15),
+                                  Text(
+                                    'Select Product Images',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                const SizedBox(height: 30),
-                CustomTextfield(
-                  controller: productNameController,
-                  hintText: 'Product Name',
-                ),
-                const SizedBox(height: 10),
-                CustomTextfield(
-                  controller: descriptionController,
-                  hintText: 'Description',
-                  maxlines: 7,
-                ),
-                const SizedBox(height: 10),
-                CustomTextfield(controller: priceController, hintText: 'Price'),
-                const SizedBox(height: 10),
-                CustomTextfield(
-                  controller: quantityController,
-                  hintText: 'Quantity',
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  child: DropdownButton(
-                    value: category,
-                    icon: Icon(Icons.keyboard_arrow_down),
-                    items: productCategories.map((String item) {
-                      return DropdownMenuItem(value: item, child: Text(item));
-                    }).toList(),
-                    onChanged: (String? newCategory) {
-                      setState(() {
-                        category = newCategory!;
-                      });
-                    },
+                  const SizedBox(height: 30),
+                  CustomTextfield(
+                    controller: productNameController,
+                    hintText: 'Product Name',
                   ),
-                ),
-                const SizedBox(height: 10),
-                CustomElevatedbutton(text: 'Sell', onPressed: sellProducts),
-              ],
+                  const SizedBox(height: 10),
+                  CustomTextfield(
+                    controller: descriptionController,
+                    hintText: 'Description',
+                    maxlines: 7,
+                  ),
+                  const SizedBox(height: 10),
+                  CustomTextfield(controller: priceController, hintText: 'Price'),
+                  const SizedBox(height: 10),
+                  CustomTextfield(
+                    controller: quantityController,
+                    hintText: 'Quantity',
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: DropdownButton(
+                      value: category,
+                      icon: Icon(Icons.keyboard_arrow_down),
+                      items: productCategories.map((String item) {
+                        return DropdownMenuItem(value: item, child: Text(item));
+                      }).toList(),
+                      onChanged: (String? newCategory) {
+                        setState(() {
+                          category = newCategory!;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  CustomElevatedbutton(text: 'Sell', onPressed: sellProducts),
+                ],
+              ),
             ),
           ),
         ),

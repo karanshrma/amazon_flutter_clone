@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 
 const String defaultImageUrl = "https://media.istockphoto.com/id/2173059563/vector/coming-soon-image-on-white-background-no-photo-available.jpg?s=612x612&w=0&k=20&c=v0a_B58wPFNDPULSiw_BmPyhSNCyrP_d17i2BPPyDTk=";
 void showSnackbar(BuildContext context, String text) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  ScaffoldMessenger.of(context)..hideCurrentSnackBar()..showSnackBar(SnackBar(content: Text(text , style: const TextStyle(color: Colors.black),) , backgroundColor: Colors.orangeAccent,));
 }
 
 Future<List<File>> pickImages() async {

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:amazon_flutter_clone/constants/utils.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 void httpErrorHandle({
@@ -20,6 +20,7 @@ void httpErrorHandle({
       showSnackbar(context, jsonDecode(response.body)['msg']);
       break;
     default:
-      showSnackbar(context, response.body);
+      print(response.body);
+
   }
 }

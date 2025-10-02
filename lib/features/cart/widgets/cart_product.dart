@@ -245,10 +245,8 @@ class _CartProductState extends State<CartProduct> {
                     ),
                     const Spacer(),
 
-                    // Delete Button (Optional)
                     InkWell(
                       onTap: () {
-                        // You can add a delete from cart functionality here
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
@@ -261,8 +259,7 @@ class _CartProductState extends State<CartProduct> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  // Add delete functionality here
-
+                                  _confirmAndRemove(product);
                                   Navigator.pop(context);
                                 },
                                 child: const Text('Remove'),

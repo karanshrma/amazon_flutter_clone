@@ -103,25 +103,25 @@ class AdminService {
 
         for (int i = 0; i < decodedResponse.length; i++) {
           try {
-            print("🔄 Processing product $i");
+            ("🔄 Processing product $i");
             Map<String, dynamic> productMap =
                 decodedResponse[i] as Map<String, dynamic>;
             Product product = Product.fromMap(productMap);
             productList.add(product);
-            print("✅ Successfully added product: ${product.name}");
+            ("✅ Successfully added product: ${product.name}");
           } catch (e) {
-            print("❌ Error parsing product at index $i: $e");
-            print("🔍 Product data: ${decodedResponse[i]}");
+            print(" Error parsing product at index $i: $e");
+            print("Product data: ${decodedResponse[i]}");
           }
         }
 
-        print("✅ Successfully fetched ${productList.length} products");
+        print(" Successfully fetched ${productList.length} products");
       } else {
-        print("❌ HTTP Error: ${res.statusCode}");
+        (" HTTP Error: ${res.statusCode}");
         showSnackbar(context, "Failed to fetch products: ${res.statusCode}");
       }
     } catch (e) {
-      print("❌ Error in fetchAllProducts: $e");
+      print("Error in fetchAllProducts: $e");
       showSnackbar(context, e.toString());
     }
     return productList;
@@ -131,7 +131,7 @@ class AdminService {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     List<Order> orderList = [];
     try {
-      print("🟢 [fetchAllOrders] Fetching...");
+      print(" [fetchAllOrders] Fetching...");
       http.Response res = await http.get(
         Uri.parse('$uri/admin/get-orders'),
         headers: {
@@ -140,17 +140,16 @@ class AdminService {
         },
       );
 
-      print("📡 Response status: ${res.statusCode}");
-      print("📡 Response body: ${res.body}");
+      print("Response status: ${res.statusCode}");
+      print("Response body: ${res.body}");
 
       httpErrorHandle(
         response: res,
         context: context,
         onSuccess: () {
           var decodedResponse = jsonDecode(res.body);
-          print("📦 Decoded orders length: ${decodedResponse.length}");
+          print("Decoded orders length: ${decodedResponse.length}");
           for (int i = 0; i < decodedResponse.length; i++) {
-            // Fix: Use fromMap instead of fromJson, and cast to Map<String, dynamic>
             orderList.add(
               Order.fromMap(decodedResponse[i] as Map<String, dynamic>),
             );
@@ -158,7 +157,7 @@ class AdminService {
         },
       );
     } catch (e) {
-      print("❌ Error in fetchAllOrders: $e");
+      print("Error in fetchAllOrders: $e");
       showSnackbar(context, e.toString());
     }
     return orderList;
@@ -172,7 +171,7 @@ class AdminService {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
-      print("🟢 [deleteProduct] Deleting product: ${product.id}");
+      print("[deleteProduct] Deleting product: ${product.id}");
       http.Response res = await http.post(
         Uri.parse('$uri/admin/delete-product'),
         headers: {
@@ -182,19 +181,19 @@ class AdminService {
         body: jsonEncode({'id': product.id}),
       );
 
-      print("📡 Response status: ${res.statusCode}");
-      print("📡 Response body: ${res.body}");
+      print("Response status: ${res.statusCode}");
+      print("Response body: ${res.body}");
 
       httpErrorHandle(
         response: res,
         context: context,
         onSuccess: () {
-          print("✅ Product deleted successfully");
+          print("Product deleted successfully");
           onSuccess();
         },
       );
     } catch (e) {
-      print("❌ Error in deleteProduct: $e");
+      print("Error in deleteProduct: $e");
       showSnackbar(context, e.toString());
     }
   }
@@ -208,9 +207,7 @@ class AdminService {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
-      print(
-        "🟢 [changeOrderStatus] Changing order: ${order.id} → status: $status",
-      );
+
       http.Response res = await http.post(
         Uri.parse('$uri/admin/change-order-status'),
         headers: {
@@ -223,12 +220,10 @@ class AdminService {
         }),
       );
 
-      print("📡 Response status: ${res.statusCode}");
-      print("📡 Response body: ${res.body}");
 
       httpErrorHandle(response: res, context: context, onSuccess: onSuccess);
     } catch (e) {
-      print("❌ Error in changeOrderStatus: $e");
+      print("Error in changeOrderStatus: $e");
       showSnackbar(context, e.toString());
     }
   }
@@ -238,7 +233,7 @@ class AdminService {
     List<Sales> sales = [];
     int totalEarning = 0;
     try {
-      print("🟢 [getEarnings] Fetching analytics...");
+      print("[getEarnings] Fetching analytics...");
       http.Response res = await http.get(
         Uri.parse('$uri/admin/analytics'),
         headers: {
@@ -247,8 +242,8 @@ class AdminService {
         },
       );
 
-      print("📡 Response status: ${res.statusCode}");
-      print("📡 Response body: ${res.body}");
+      print("Response status: ${res.statusCode}");
+      print("Response body: ${res.body}");
 
       httpErrorHandle(
         response: res,
@@ -256,7 +251,7 @@ class AdminService {
         onSuccess: () {
           var response = jsonDecode(res.body);
           totalEarning = response['totalEarnings'];
-          print("💰 Total earnings: $totalEarning");
+          print(" Total earnings: $totalEarning");
 
           sales = [
             Sales('Mobiles', response['mobileEarnings']),
@@ -265,11 +260,11 @@ class AdminService {
             Sales('Appliances', response['applianceEarnings']),
             Sales('Fashion', response['fashionEarnings']),
           ];
-          print("📊 Sales breakdown: $sales");
+          print("Sales breakdown: $sales");
         },
       );
     } catch (e) {
-      print("❌ Error in getEarnings: $e");
+      print("Error in getEarnings: $e");
       showSnackbar(context, e.toString());
     }
     return {'sales': sales, 'totalEarnings': totalEarning};

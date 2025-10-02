@@ -1,4 +1,4 @@
-import 'package:amazon_flutter_clone/constants/utils.dart';
+
 import 'package:amazon_flutter_clone/features/address/services/address_service.dart';
 import 'package:amazon_flutter_clone/features/cart/services/cart_service.dart';
 import 'package:amazon_flutter_clone/providers/user_provider.dart';
@@ -33,10 +33,7 @@ class _AddressScreenState extends State<AddressScreen> {
   List<PaymentItem> paymentitem = [];
 
   void onGpayResult(res) {
-    if (Provider.of<UserProvider>(
-      context,
-      listen: false,
-    ).user.address.isEmpty) {
+    if (Provider.of<UserProvider>(context, listen: false,).user.address.isEmpty) {
       addressService.saveUserAddress(
         context: context,
         address: addressToBeUsed,
@@ -83,7 +80,6 @@ class _AddressScreenState extends State<AddressScreen> {
     ];
   }
 
-  // // Add this method to load the configuration
   Future<PaymentConfiguration> _loadPaymentConfiguration() async {
     final String configString = await rootBundle.loadString('assets/gpay.json');
     return PaymentConfiguration.fromJsonString(configString);

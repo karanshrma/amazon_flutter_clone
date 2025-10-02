@@ -27,9 +27,7 @@ class HomeService {
         response: res,
         context: context,
         onSuccess: () {
-          // Fixed: Get the decoded response first
           var decodedResponse = jsonDecode(res.body);
-          // Then iterate through the list length
           for (int i = 0; i < decodedResponse.length; i++) {
             productList.add(Product.fromMap(decodedResponse[i] as Map<String, dynamic>));
           }

@@ -4,6 +4,7 @@ String uri = 'http://192.168.1.11:3000';
 
 class GlobalVariables {
   // COLORS
+
   static const appBarGradient = LinearGradient(
     colors: [
       Color.fromARGB(255, 29, 201, 192),

@@ -30,6 +30,7 @@ class _AdminScreenState extends State<AdminScreen> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,6 +42,7 @@ class _AdminScreenState extends State<AdminScreen> {
               onPressed: () => AccountService().logout(context),
               icon: const Icon(Icons.logout, color: Colors.black),
             ),
+
           ],
           flexibleSpace: Container(
             decoration: const BoxDecoration(
