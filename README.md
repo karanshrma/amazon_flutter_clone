@@ -25,22 +25,22 @@ Walkthrough Video including admin dashboard and customer - https://drive.google.
 
 ## 💻 Tech Stack
 
-| Component | Technologies Used |
-| :--- | :--- |
+| Component             | Technologies Used                                      |
+|:----------------------|:-------------------------------------------------------|
 | **Frontend (Client)** | **Flutter**, **Dart**, **Provider** (State Management) |
-| **Backend (Server)** | **Node.js**, **Express.js** |
-| **Database** | **MongoDB**, **Mongoose** (ODM) |
-| **Payments** | **Google Pay (GPay)** API Integration  |
-| **Authentication** | JWT (JSON Web Tokens) for secure Auth  |
+| **Backend (Server)**  | **Node.js**, **Express.js**                            |
+| **Database**          | **MongoDB**, **Mongoose** (ODM)                        |
+| **Payments**          | **Google Pay (GPay)** API Integration                  |
+| **Authentication**    | JWT (JSON Web Tokens) for secure Auth                  |
 
 ## ⚙️ Project Structure
 
 This project is split into two separate repositories:
 
-| Repository | Description | Link |
-| :--- | :--- | :--- |
-| **Frontend** | The cross-platform mobile application built with Flutter. | `https://github.com/karanshrma/amazon_flutter_clone` |
-| **Backend** | The API server built with Node.js, Express.js, and MongoDB. | `https://github.com/karanshrma/server` |
+| Repository   | Description                                                 | Link                                                 |
+|:-------------|:------------------------------------------------------------|:-----------------------------------------------------|
+| **Frontend** | The cross-platform mobile application built with Flutter.   | `https://github.com/karanshrma/amazon_flutter_clone` |
+| **Backend**  | The API server built with Node.js, Express.js, and MongoDB. | `https://github.com/karanshrma/server`               |
 
 ## 🛠️ Setup and Installation
 
